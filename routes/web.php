@@ -29,6 +29,7 @@ $router->group(['prefix' => 'auth'], function () use ($router) {
 $router->group(['prefix' => 'user'], function () use ($router) {
     $router->get('/',  ['uses' => 'UserController@showAllUsers', 'middleware' => 'auth']);
     $router->get('list/count',  ['uses' => 'UserController@showAllCountUsers', 'middleware' => 'auth']);
+    $router->get('/counts',  ['uses' => 'UserController@showAllCounts', 'middleware' => 'auth']);
     $router->get('byId/{id}',  ['uses' => 'UserController@showOneUser']);
     $router->get('byName/{name}',  ['uses' => 'UserController@showOneByName', 'middleware' => 'auth']);
     $router->post('/',  ['uses' => 'UserController@create']);
@@ -56,6 +57,8 @@ $router->group(['prefix' => 'proposal'], function () use ($router) {
     $router->get('byClientId/{client_id}',  ['uses' => 'ProposalController@showAllProposalsByClient']);
     $router->get('byClientName/{client_name}',  ['uses' => 'ProposalController@showAllProposalsByClientName']);
     $router->get('byName/{title}',  ['uses' => 'ProposalController@showOneByTitle']);
+    $router->get('my',  ['uses' => 'ProposalController@showMyAllProposals', 'middleware'=> 'auth']);
+    $router->get('recent/my',  ['uses' => 'ProposalController@showMyNewProposals', 'middleware'=> 'auth']);
     $router->post('/',  ['uses' => 'ProposalController@create', 'middleware' => 'auth']);
     $router->put('update/{id}',  ['uses' => 'ProposalController@update', 'middleware' => 'auth']);
     $router->delete('delete/{id}',  ['uses' => 'ProposalController@delete', 'middleware' => 'auth']);

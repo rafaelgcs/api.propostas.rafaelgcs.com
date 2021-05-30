@@ -129,6 +129,77 @@ class ProposalController extends Controller
     }
 
     /**
+     * Show new Proposals by Owner ID
+     * 
+     * @group Proposal
+     * @urlParam owner_id string requierd The ID of the owner to search. Example: 1
+     */
+    public function showAllProposalsByOwnerId($owner_id)
+    {
+        $proposals = Proposal::select('*')
+            ->where('owner_id', '=', $owner_id)
+            ->get();
+
+        if (count($proposals) != 0) {
+            $return = ["success" => true, "data" => $proposals];
+            return response()->json($return);
+        } else {
+            $return = ["success" => false, "data" => $proposals, "error" => ["message" => "Nenhum usuário foi encontrado!"]];
+            return response()->json($return);
+        }
+    }
+
+    /**
+     * Show my new Proposals
+     * 
+     * @group Proposal
+     */
+    public function showMyNewProposals()
+    {
+        $user = auth()->user();
+
+        $proposals = Proposal::select('*')
+            ->where('owner_id', '=', $user["id"])
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
+        foreach ($proposals as $key => $proposal) {
+            $proposal_client = Client::select('*')
+                ->where('id', '=', $proposal['client_id'])
+                ->first();
+            $proposal['client'] = $proposal_client;
+        }
+
+        return response()->json($proposals);
+    }
+
+    /**
+     * Show my all Proposals
+     * 
+     * @group Proposal
+     */
+    public function showMyAllProposals()
+    {
+        $user = auth()->user();
+
+        $offset = isset($_GET['offset']) ? $_GET['offset'] : 5;
+
+        $proposals = Proposal::select('*')
+            ->where('owner_id', '=', $user["id"])
+            ->orderBy('id', 'desc')
+            ->paginate($offset);
+
+        foreach ($proposals as $key => $proposal) {
+            $proposal_client = Client::select('*')
+                ->where('id', '=', $proposal['client_id'])
+                ->first();
+            $proposal['client'] = $proposal_client;
+        }
+
+        return response()->json($proposals);
+    }
+
+    /**
      * Show all Proposals by Client Name
      * 
      * @group Proposal

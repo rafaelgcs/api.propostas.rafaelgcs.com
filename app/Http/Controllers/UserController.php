@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
+use App\Models\Proposal;
 use App\Models\User;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -92,6 +95,29 @@ class UserController extends Controller
             $return = ["success" => false, "data" => $users, "error" => ["message" => "Nenhum usuário foi encontrado!"]];
             return response()->json($return);
         }
+    }
+
+    /**
+     * Show all Users Counts
+     * 
+     * @group User
+     */
+    public function showAllCounts()
+    {
+        $user = auth()->user();
+        $today = new DateTime();
+        $clients = Client::where('owner_id', '=', $user['id'])->count();
+        $proposals = Proposal::where('owner_id', '=', $user['id'])->count();
+        $proposalsToday = Proposal::where('created_at', 'LIKE', date_format($today, 'Y-m-d'))->count();
+
+        // if (count($users) != 0) {
+        
+        $return = ["success" => true, "data" => ["clients"=> $clients, "proposals"=> $proposals, "proposals_today"=> $proposalsToday]];
+        return response()->json($return);
+        // } else {
+        //     $return = ["success" => false, "data" => $users, "error" => ["message" => "Nenhum usuário foi encontrado!"]];
+        //     return response()->json($return);
+        // }
     }
 
 
